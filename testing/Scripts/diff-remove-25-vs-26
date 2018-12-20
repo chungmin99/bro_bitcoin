@@ -1,0 +1,23 @@
+#! /usr/bin/env bash
+#
+# Bro 2.5 vs 2.6 introduces some subtle log discrepancies, that this
+# filter normalizes away.
+
+awk '
+BEGIN { FS="\t"; OFS="\t"; }
+
+/^[^#]/ {
+    if ( column > 0 && $column == "bro" ) {
+        $column = "-";
+    }
+}
+
+/^#fields/ {
+    for ( i = 2; i <= NF; ++i ) {
+        if ( $i == "n" )
+            column = i;
+        }
+    }
+
+{ print }
+'
